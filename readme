@@ -1,8 +1,10 @@
-compile:
+This example implement 2 functions to simulates the creation, reading and writing of files in memory.
+
+To compile:
 
 gcc main.c -o main
 
 
-launch:
+To launch:
 
 ./main
