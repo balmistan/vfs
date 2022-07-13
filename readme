@@ -1,0 +1,8 @@
+compile:
+
+gcc main.c -o main
+
+
+launch:
+
+./main
