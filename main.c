@@ -8,23 +8,8 @@
 struct fileStructure {
 	char fname[30];
 	char fcontent[100];
-};
+}virtualFileSystem[MAX_FILE_QTY];
 
-
-/**
- * @brief Returns the pointer to the array of structures of type fileStructure. The first call declares the array and initializes the various fields with empty strings.
-**/
-struct fileStructure* getVirtualFileSystem(){
-	static struct fileStructure* virtualFileSystem = NULL;
-	if(!virtualFileSystem){
-		virtualFileSystem = (struct fileStructure*) malloc(MAX_FILE_QTY * sizeof(struct fileStructure));
-		for(int i=0; i<MAX_FILE_QTY; i++){
-			strcpy(virtualFileSystem[i].fname, "");
-			strcpy(virtualFileSystem[i].fcontent, "");
-			}	
-	}
-	return virtualFileSystem;
-}
 
 /**
  * @brief Create a virtual file if it doesn't already exist or overwrite its contents.
@@ -32,21 +17,20 @@ struct fileStructure* getVirtualFileSystem(){
  * @param buf pointer to the buffer from which to read the content to be written to the virtual file
  * @return amount of bytes written or -1 on error.
 **/
-int fs_write(char* fname, char* buf){
-	struct fileStructure* virtualFileSystem = getVirtualFileSystem();
+int fs_write(char* fname, char* databuf){
 	//content override if file exists
 	for (int i=0; i<MAX_FILE_QTY; i++){
 		if(!strcmp(fname, virtualFileSystem[i].fname)){
-    		strcpy(virtualFileSystem[i].fcontent, buf);
-    		return strlen(buf);
+    		strcpy(virtualFileSystem[i].fcontent, databuf);
+    		return strlen(databuf);
   	 	}
 	}
 	//create file if it doesn't exists
 	for (int i=0; i<MAX_FILE_QTY; i++){
   		 if (!strcmp(virtualFileSystem[i].fname, "")){
 		  	strcpy(virtualFileSystem[i].fname, fname);
-   			strcpy(virtualFileSystem[i].fcontent, buf);
-    		return strlen(buf);
+   			strcpy(virtualFileSystem[i].fcontent, databuf);
+    		return strlen(databuf);
    			}
 	}
 	return -1;
@@ -58,12 +42,11 @@ int fs_write(char* fname, char* buf){
  * @param buf pointer to the buffer into which to place the content read from the virtual file
  * @return amount of bytes read or -1 on error
 **/
-int fs_read(char* fname, char* buf){
-	struct fileStructure* virtualFileSystem = getVirtualFileSystem();
+int fs_read(char* fname, char* databuf){
 	for (int i=0; i<MAX_FILE_QTY; i++){
 	   if (!strcmp(fname, virtualFileSystem[i].fname)){
-	    strcpy(buf, virtualFileSystem[i].fcontent);
-	    return strlen(buf);
+	    strcpy(databuf, virtualFileSystem[i].fcontent);
+	    return strlen(databuf);
 	   }
 	}
 	   return -1;
@@ -72,7 +55,6 @@ int fs_read(char* fname, char* buf){
  * @brief It prints the file list
  */
 void fs_ls(void){
-	struct fileStructure* virtualFileSystem = getVirtualFileSystem();
 	printf("%s\n", "----------------------FILE LIST-----------------------------");
 	for (int i=0; i<MAX_FILE_QTY; i++){
 	   if (strcmp(virtualFileSystem[i].fname, "")){
