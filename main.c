@@ -12,17 +12,17 @@ struct fileStructure {
 
 
 /**
- * @brief Create a virtual file if it doesn't already exist or overwrite its contents.
+ * @brief Create a virtual file if it doesn't already exist. Overwrite its contents if it exists.
  * @param fname pointer to file name
- * @param buf pointer to the buffer from which to read the content to be written to the virtual file
- * @return amount of bytes written or -1 on error.
+ * @param databuf is a pointer to the buffer from which to read the content to be written to the virtual file
+ * @return 0 on SUCCESS or -1 on ERROR.
 **/
 int fs_write(char* fname, char* databuf){
 	//content override if file exists
 	for (int i=0; i<MAX_FILE_QTY; i++){
 		if(!strcmp(fname, virtualFileSystem[i].fname)){
     		strcpy(virtualFileSystem[i].fcontent, databuf);
-    		return strlen(databuf);
+    		return 0;
   	 	}
 	}
 	//create file if it doesn't exists
@@ -30,27 +30,30 @@ int fs_write(char* fname, char* databuf){
   		 if (!strcmp(virtualFileSystem[i].fname, "")){
 		  	strcpy(virtualFileSystem[i].fname, fname);
    			strcpy(virtualFileSystem[i].fcontent, databuf);
-    		return strlen(databuf);
+    		return 0;
    			}
 	}
 	return -1;
 }
 
+
 /**
  * @brief Reads the contents of a virtual file
  * @param fname pointer to file name
- * @param buf pointer to the buffer into which to place the content read from the virtual file
- * @return amount of bytes read or -1 on error
+ * @param databuf is a pointer to the array to receive data read from virtual file
+ * @return 0 on SUCCESS or -1 on error
 **/
 int fs_read(char* fname, char* databuf){
 	for (int i=0; i<MAX_FILE_QTY; i++){
-	   if (!strcmp(fname, virtualFileSystem[i].fname)){
-	    strcpy(databuf, virtualFileSystem[i].fcontent);
-	    return strlen(databuf);
+	   if (!strcmp(fname, virtualFileSystem[i].fname)){   
+	       strcpy(databuf, virtualFileSystem[i].fcontent);
+	       return 0;
 	   }
 	}
 	   return -1;
 }
+
+
 /**
  * @brief It prints the file list
  */
@@ -65,12 +68,24 @@ void fs_ls(void){
 }
 
 
+
+
+
+
+
+
+
+// ############################  TEST FUNCTION  ################################# 
+
+
 /**
  * @brief main function used for testing
  */
 int main(int argc, char *argv[]){	
 	char fname[30], buf[100], choice;
+	int issue;
 	while(1){
+		printf("\n\n");
 		printf("1. Create a new file or modify its content \n");
 		printf("2. Read the contents of a file \n");
 		printf("3. Exit \n\n");
@@ -86,15 +101,19 @@ int main(int argc, char *argv[]){
 				fputs("\nEnter the contents of the file:  ", stdout);
 				fgets(buf, 99, stdin);
 				buf[strlen(buf) - 1] = '\0';
-				if(fs_write(fname, buf )== -1)
-					printf("%s %s\n", "error write to file: ", fname);
+				issue = fs_write(fname, buf);
+				fs_ls();
+				if(issue == -1)
+					printf("%s %s\n\n", "error write to file: ", fname);	
 				break;  
 			case '2':
 				printf("\nEnter the file name: ");
 				fgets(fname, 29, stdin);
 				fname[strlen(fname) - 1] = '\0';
-				if(fs_read(fname, buf)==-1)
-					printf("%s %s\n", "error read file: ", fname);
+				issue = fs_read(fname, buf);
+				fs_ls();
+				if(issue == -1)
+					printf("%s %s\n\n", "error read file: ", fname);
 				else
 					printf("%s %s:  %s\n\n", "string in ", fname, buf );
 				break;
@@ -104,6 +123,6 @@ int main(int argc, char *argv[]){
 			default: 
 				break;
 		}//switch close
-		fs_ls();
+		
 	}//while close
 }//main close
