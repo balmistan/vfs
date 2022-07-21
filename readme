@@ -2,9 +2,9 @@ This example implement 2 functions to simulates the creation, reading and writin
 
 To compile:
 
-gcc main.c -o main
+make
 
 
 To launch:
 
-./main
+./test
